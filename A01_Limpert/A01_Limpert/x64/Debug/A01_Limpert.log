@@ -1,0 +1,6 @@
+﻿  A01_Limpert.cpp
+A01_Limpert.obj : error LNK2019: unresolved external symbol "public: void __cdecl mQueue<int>::push_back(int)" (?push_back@?$mQueue@H@@QEAAXH@Z) referenced in function main
+A01_Limpert.obj : error LNK2019: unresolved external symbol "public: void __cdecl mQueue<int>::print(void)" (?print@?$mQueue@H@@QEAAXXZ) referenced in function main
+A01_Limpert.obj : error LNK2019: unresolved external symbol "public: __cdecl mQueue<int>::mQueue<int>(void)" (??0?$mQueue@H@@QEAA@XZ) referenced in function main
+A01_Limpert.obj : error LNK2019: unresolved external symbol "public: __cdecl mQueue<int>::~mQueue<int>(void)" (??1?$mQueue@H@@QEAA@XZ) referenced in function main
+C:\Users\Edrag\OneDrive\Documents\GitHub\IGME309\A01_Limpert\x64\Debug\A01_Limpert.exe : fatal error LNK1120: 4 unresolved externals

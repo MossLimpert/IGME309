@@ -1,6 +1,11 @@
 #include "Main.h"
 using namespace std;
 
+// TODO: 
+// 
+// 
+// 
+
 //returns the current attributes
 WORD GetConsoleTextAttribute(HANDLE hCon)
 {

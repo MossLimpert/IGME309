@@ -12,13 +12,27 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	if (a_nSubdivisions > 360)
 		a_nSubdivisions = 360;
 
-	/*
-		Calculate a_nSubdivisions number of points around a center point in a radial manner
-		then call the AddTri function to generate a_nSubdivision number of faces
-	*/
-	AddTri(	vector3(0.0f, 0.0f, 0.0f),
-			vector3(1.0f, 0.0f, 0.0f),
-			vector3(0.77f, 0.77f, 0.0f));
+	// array to hold the vertices in
+	std::vector<vector3> vertex;
+	// currentAngle will be updated after each tri is drawn
+	GLfloat currentAngle = 0;
+	// 2 * pi is 360 degrees, and dividing 360 by the subdivisions will get us the change in angle
+	GLfloat changeInAngle = static_cast<GLfloat>(2.0 * PI / static_cast<GLfloat>(a_nSubdivisions));
+	// add all the vertices to the array
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		// get the point on the outside of the circle at this angle. 0.0f for z bc not putting it forward or back
+		vector3 temp = vector3(cos(currentAngle), sin(currentAngle), 0.0f);
+		currentAngle += changeInAngle;
+		vertex.push_back(temp);
+	}
+
+	// add a triangle from the origin between the next two outside points
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(ZERO_V3, vertex[i], vertex[(i + 1) % a_nSubdivisions]); // i think this keeps it from 
+		// accessing beyond the end of the array?
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);

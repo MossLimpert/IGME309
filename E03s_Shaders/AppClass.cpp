@@ -67,14 +67,14 @@ void AppClass::InitOpenGL(void)
 }
 void AppClass::InitShaders(void)
 {
-	m_uShaderProgramID = LoadShaders("Shaders//BasicColor.vs", "Shaders//BasicColor.fs");
+	m_uShaderProgramID = LoadShaders("Shaders//BasicColor.vs", "Shaders//BasicColorInvert.fs");
 	glUseProgram(m_uShaderProgramID);
 }
 void AppClass::InitVariables(void)
 {
 	std::vector<glm::vec3> lVertex;
 	//vertex 1
-	lVertex.push_back(glm::vec3(-1.0f, -1.0f, 0.0f)); //position	// PUT COMPLEMENT COLORS HERE IN EX
+	lVertex.push_back(glm::vec3(-1.0f, -1.0f, 0.0f)); //position
 	lVertex.push_back(glm::vec3(1.0f, 0.0f, 0.0f)); //color
 	//vertex 2
 	lVertex.push_back(glm::vec3(1.0f, -1.0f, 0.0f)); //position
@@ -95,21 +95,14 @@ void AppClass::InitVariables(void)
 	//count the attributes
 	int attributeCount = 2;
 	
-	// Position attribute 
-	glEnableVertexAttribArray(0);	// enable this attribute, send it 3 floats, glfalse dont normalize positions, how many attributes, colors + pos do i have,
-	// attributect * size of vec, jump 2 to get to the next position in the buffer (the stripes). // for position, start reading at 0						
+	// Position attribute
+	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, attributeCount * sizeof(glm::vec3), (GLvoid*)0);
 
 	// Color attribute
-	glEnableVertexAttribArray(1);																// for color, start reading at 1
+	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, attributeCount * sizeof(glm::vec3), (GLvoid*)(1 * sizeof(glm::vec3)));
 }
-/// <summary>
-/// input
-/// USE THIS TO CHANGE UNIFORM 
-/// 1 - COLOR TO GET THE UMMMMMM COMPLEMENT
-/// </summary>
-/// <param name="a_event"></param>
 void AppClass::ProcessKeyboard(sf::Event a_event)
 {
 	if (a_event.key.code == sf::Keyboard::Key::Escape)//Event says I pressed the Escape key
@@ -122,6 +115,8 @@ void AppClass::ProcessKeyboard(sf::Event a_event)
 		m_v3Color = glm::vec3(0.0f, 0.0f, 1.0f);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0))
 		m_v3Color = glm::vec3(-1.0f, -1.0f, -1.0f);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
+		m_bCompliment = !m_bCompliment;
 }
 void AppClass::Display(void)
 {
@@ -130,7 +125,10 @@ void AppClass::Display(void)
 
 	//read uniforms and send values
 	GLuint SolidColor = glGetUniformLocation(m_uShaderProgramID, "SolidColor");
-	glUniform1i(SolidColor, m_v3Color.r, m_v3Color.g, m_v3Color.b);		// this is cricial to the exercise. this is cpu var --> shader and gpu var
+	glUniform3f(SolidColor, m_v3Color.r, m_v3Color.g, m_v3Color.b);
+
+	GLuint Complimentary = glGetUniformLocation(m_uShaderProgramID, "Complimentary");
+	glUniform1i(Complimentary, m_bCompliment);
 
 	//draw content
 	glDrawArrays(GL_TRIANGLES, 0, 3);

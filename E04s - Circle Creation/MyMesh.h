@@ -13,7 +13,7 @@ class MyMesh
 	bool m_bBinded = false;		//Binded flag
 	uint m_uVertexCount = 0;	//Number of vertices in this MyMesh
 	GLuint m_VAO = 0;			//OpenGL Vertex Array Object
-	GLuint m_VBO = 0;			//OpenGL Vertex Array Object
+	GLuint m_VBO = 0;			//OpenGL Vertex Buffer Object
 
 	std::vector<vector3> m_lVertex;		//Composed vertex array
 	std::vector<vector3> m_lVertexPos;	//List of Vertices
@@ -148,20 +148,19 @@ public:
 	*/
 	void GenerateCuboid(vector3 a_v3Dimensions, vector3 a_v3Color = C_WHITE);
 	/*
-	USAGE: Generates a cone mesh
+	USAGE: Generates a CIRCLE mesh
 	ARGUMENTS:
 	-	float a_fRadius -> radius
-	-	int a_nSubdivisions -> divisions of the cap
+	-	int a_nSubdivisions -> divisions 
 	-	vector3 a_v3Color -> Color of the mesh
 	OUTPUT: ---
 	*/
 	void GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color = C_WHITE);
 	/*
-	USAGE: Generates a cylinder mesh
+	USAGE: Generates a cone mesh
 	ARGUMENTS:
 	-	float a_fRadius -> radius
-	-	float a_fHeight -> how tall is the mesh
-	-	int a_nSubdivisions -> divisions on the cap
+	-	int a_nSubdivisions -> divisions of the cap
 	-	vector3 a_v3Color -> Color of the mesh
 	OUTPUT: ---
 	*/

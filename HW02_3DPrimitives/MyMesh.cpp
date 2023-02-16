@@ -60,9 +60,34 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Release();
 	Init();
 
+	std::vector<vector3> circle;
+	vector3 pointyEnd = vector3(0.0f, 0.0f, a_fHeight);
+	GLfloat currentAngle = 0;
+	GLfloat changeInAngle = static_cast<GLfloat>(2.0 * PI / static_cast<GLfloat>(a_nSubdivisions));
+
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
 	// -------------------------------
+	// add circle verts to array
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		vector3 temp = vector3(cos(currentAngle), sin(currentAngle), 0.0f);
+		currentAngle += changeInAngle;
+		circle.push_back(temp);
+	}
+
+	// draw circle
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(ZERO_V3, circle[(i + 1) % a_nSubdivisions], circle[i]);
+	}
+
+	// connect circle to point using tri
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(circle[i], circle[(i + 1) % a_nSubdivisions], pointyEnd);
+	}
+
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -84,9 +109,45 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Release();
 	Init();
 
+	std::vector<vector3> circle1;
+	std::vector<vector3> circle2;
+	GLfloat currentAngle = 0;
+	GLfloat changeInAngle = static_cast<GLfloat>(2.0 * PI / static_cast<GLfloat>(a_nSubdivisions));
+
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
 	// -------------------------------
+
+	// add bottom circle verts to array
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		vector3 temp = vector3(cos(currentAngle), sin(currentAngle), 0.0f);
+		currentAngle += changeInAngle;
+		circle1.push_back(temp);
+	}
+	// add top circle verts to array
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		vector3 temp = vector3(cos(currentAngle), sin(currentAngle), a_fHeight);
+		currentAngle += changeInAngle;
+		circle2.push_back(temp);
+	}
+
+	// draw top circle
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(ZERO_V3, circle1[(i + 1) % a_nSubdivisions], circle1[i]);
+	}
+	// draw bottom circle
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vector3(0.0f, 0.0f, a_fHeight), circle2[i], circle2[(i + 1) % a_nSubdivisions]);
+	}
+	// connect circles
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddQuad(circle1[i], circle1[(i + 1) % a_nSubdivisions], circle2[i], circle2[(i + 1) % a_nSubdivisions]);
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -114,9 +175,35 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Release();
 	Init();
 
+	std::vector<vector3> bottomCircleOuter;
+	std::vector<vector3> bottomCircleInner;
+	std::vector<vector3> topCircleOuter;
+	std::vector<vector3> topCircleInner;
+	GLfloat currentAngle = 0;
+	GLfloat changeInAngle = static_cast<GLfloat>(2.0 * PI / static_cast<GLfloat>(a_nSubdivisions));
+
 	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
 	// -------------------------------
+	// add bottom circle OUTER verts to array
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		vector3 temp = vector3(cos(currentAngle) * a_fOuterRadius, sin(currentAngle) * a_fOuterRadius, 0.0f);
+		currentAngle += changeInAngle;
+		bottomCircleOuter.push_back(temp);
+	}
+	// add bottom circler INNER verts to array
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+
+	}
+	// add top circle verts to array
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		vector3 temp = vector3(cos(currentAngle), sin(currentAngle), a_fHeight);
+		currentAngle += changeInAngle;
+		topCircleOuter.push_back(temp);
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);

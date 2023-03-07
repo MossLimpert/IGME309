@@ -34,6 +34,26 @@ void Application::Display(void)
 	matrix4 m4View = m_pCameraMngr->GetViewMatrix();
 	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
 
+	// can use matrices and/or quaternions
+	quaternion rotation = quaternion(m_v3Rotation);
+	static quaternion orientation = quaternion(0,0,0,0.0f);
+	/*orientation = glm::cross(orientation, AXIS_X);
+	orientation = glm::cross(orientation, AXIS_Y);
+	orientation = glm::cross(orientation, AXIS_Z);*/
+
+	//orientation = glm::cross(orientation, rotation);
+	glm::normalize(orientation);
+
+
+	quaternion q1 = glm::angleAxis(glm::radians(m_v3Rotation.x), glm::cross(orientation, AXIS_X));
+	quaternion q2 = glm::angleAxis(glm::radians(m_v3Rotation.y), glm::cross(orientation, AXIS_Y));
+	quaternion q3 = glm::angleAxis(glm::radians(m_v3Rotation.z), glm::cross(orientation, AXIS_Z));
+
+	quaternion q4 = q1 * q2;
+	q4 = glm::cross(q4, q3);	// lines here both describe the same output
+	// STILL HAS GIMBALL LOCK
+	// when you rotate, also change orientation!!!!
+
 	m_m4Model = glm::rotate(IDENTITY_M4, glm::radians(m_v3Rotation.x), vector3(1.0f, 0.0f, 0.0f));
 	m_m4Model = glm::rotate(m_m4Model, glm::radians(m_v3Rotation.y), vector3(0.0f, 1.0f, 0.0f));
 	m_m4Model = glm::rotate(m_m4Model, glm::radians(m_v3Rotation.z), vector3(0.0f, 0.0f, 1.0f));
@@ -41,8 +61,9 @@ void Application::Display(void)
 	* The following line was replaced by the model manager so we can see a model instead of a cone
 	*/
 	//m_pMesh->Render(m4Projection, m4View, ToMatrix4(m_m4Model));
-	m_pModelMngr->AddModelToRenderList(m_sSteve, m_m4Model);
-
+	
+	//m_pModelMngr->AddModelToRenderList(m_sSteve, m_m4Model);
+	m_pModelMngr->AddModelToRenderList(m_sSteve, ToMatrix4(q4));
 
 	// draw a skybox
 	m_pModelMngr->AddSkyboxToRenderList();

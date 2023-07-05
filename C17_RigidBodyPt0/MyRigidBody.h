@@ -25,8 +25,13 @@ class MyRigidBody
 	vector3 m_v3MinL = vector3(0.0f); //minimum coordinate in local space
 	vector3 m_v3MaxL = vector3(0.0f); //maximum coordinate in local space
 
-	vector3 m_v3MinG = vector3(0.0f); //minimum coordinate in local space
-	vector3 m_v3MaxG = vector3(0.0f); //maximum coordinate in local space
+	vector3 m_v3MinG = vector3(0.0f); //minimum coordinate in global space
+	vector3 m_v3MaxG = vector3(0.0f); //maximum coordinate in global space
+
+	// min,min / max.x,min.y / min.x, max.y / max, max
+	// generate all corners out of min and max
+	// global space
+	// new axis aligned (axis re-aligned) bounding box
 
 	vector3 m_v3HalfWidth = vector3(0.0f); //half the size of all sides
 

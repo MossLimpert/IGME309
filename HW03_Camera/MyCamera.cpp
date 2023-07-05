@@ -21,16 +21,20 @@ void MyCamera::MoveForward(float a_fDistance)
 	//		 in the _Binary folder you will notice that we are moving 
 	//		 backwards and we never get closer to the plane as we should 
 	//		 because as we are looking directly at it.
-	m_v3Position += vector3(0.0f, 0.0f, a_fDistance);
-	m_v3Target += vector3(0.0f, 0.0f, a_fDistance);
+	m_v3Position += m_v3Forward * a_fDistance;
+	m_v3Target += m_v3Forward * a_fDistance;
 }
 void MyCamera::MoveVertical(float a_fDistance)
 {
 	//Tip:: Look at MoveForward
+	m_v3Position += vector3(0, a_fDistance, 0);
+	m_v3Target += vector3(0, a_fDistance, 0);
 }
 void MyCamera::MoveSideways(float a_fDistance)
 {
 	//Tip:: Look at MoveForward
+	m_v3Position += m_v3Rightward * a_fDistance;
+	m_v3Target += m_v3Rightward * a_fDistance;
 }
 void MyCamera::CalculateView(void)
 {
@@ -40,6 +44,39 @@ void MyCamera::CalculateView(void)
 	//		 it will receive information from the main code on how much these orientations
 	//		 have change so you only need to focus on the directional and positional 
 	//		 vectors. There is no need to calculate any right click process or connections.
+
+	m_v3Forward = vector3(0.0f, 0.0f, -1.0f);
+	m_v3Upward = vector3(0.0f, 1.0f, 0.0f);
+	m_v3Rightward = vector3(1.0f, 0.0f, 0.0f);
+
+	// i had a lot of previous attempts, but then my file got corrupted. 
+	//
+	// it ended up backwards....
+	// 
+	
+	// PITCH
+	float pitchAngle = glm::radians(m_v3PitchYawRoll.y);
+	quaternion pitch = pitch * glm::angleAxis(m_v3PitchYawRoll.y, m_v3Upward);
+	//pitch = glm::normalize(pitch);
+	m_v3Forward = m_v3Forward * pitch;
+	m_v3Forward = glm::normalize(m_v3Forward);
+
+	m_v3Rightward = glm::angleAxis(float(PI / 2), m_v3Upward) * m_v3Forward;
+
+	// YAW
+	float yawAngle = glm::radians(m_v3PitchYawRoll.x);
+	quaternion yaw = yaw * glm::angleAxis(m_v3PitchYawRoll.x, -m_v3Rightward);
+	//yaw = glm::normalize(yaw);
+	m_v3Forward = yaw * m_v3Forward;
+	m_v3Forward = glm::normalize(m_v3Forward);
+	
+	// UP
+	m_v3Upward = glm::cross(m_v3Forward, m_v3Rightward);
+	m_v3Upward = glm::normalize(m_v3Upward);
+	
+	// change what we are looking at
+	m_v3Target = m_v3Position + m_v3Forward;
+
 	m_m4View = glm::lookAt(m_v3Position, m_v3Target, m_v3Upward);
 }
 //You can assume that the code below does not need changes unless you expand the functionality

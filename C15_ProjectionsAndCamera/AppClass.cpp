@@ -54,7 +54,10 @@ void Application::Display(void)
 	//Camera position
 	static float fPos = 0.0f;
 	m_pCamera->SetPosition(vector3(fPos, 0.0f, 10.0f));
+	// changing z value here doesn't do anything, still pointing same direction
 	m_pCamera->SetTarget(vector3(fPos, 0.0f, 9.0f));
+	m_pCamera->SetUp(vector3(0.0f, 1.0f, 0.0f));
+	m_pCameraMngr->SetFOV(fPos + 45.0f);
 	fPos -= 0.01f;
 	/* 
 	Steve is in the dll's Camera class space, while the other primitives
@@ -65,6 +68,7 @@ void Application::Display(void)
 	*/
 
 	//draw the primitive
+	// getview uses calcview which uses glm::lookAt(pos, target, up)
 	m_pMesh->Render(	m_pCamera->GetProjectionMatrix(),	//Projection
 						m_pCamera->GetViewMatrix(),			//View
 						IDENTITY_M4);						//model

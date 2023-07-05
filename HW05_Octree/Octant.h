@@ -39,6 +39,7 @@ class Octant
 	std::vector<Octant*> m_lChild; //list of nodes that contain objects (this will be applied to root only)
 	
 public:
+	void PopulateEntity(uint childIndex);
 	/*
 	USAGE: Constructor for root only, will create an octant containing all Entities in the manager
 	ARGUMENTS:
@@ -61,7 +62,7 @@ public:
 	OUTPUT: size of octant
 	*/
 	float GetSize(void);
-
+	
 	/*
 	USAGE: Gets the center of the octant in global scape
 	ARGUMENTS: ---

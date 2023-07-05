@@ -1,12 +1,154 @@
 #include "MyRigidBody.h"
 using namespace BTX;
 //Allocation
+
+
 uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 {
 	//TODO: Calculate the SAT algorithm I STRONGLY suggest you use the
 	//Real Time Collision detection algorithm for OBB here but feel free to
 	//implement your own solution.
+
+	float aShadow, bShadow;
+	matrix4 b;	// b in a's coordinate frame
+	matrix4 bCorrected; // add an epsilon to correct for floating point stuff
+	
+	matrix4 test = {
+		vector4(0.8047, -0.3106,0.5058,0),
+		vector4(0.5058, 0.8047, -0.3106, 0),
+		vector4(-0.3106, 0.5058, 0.8047, 0),
+		vector4(0,0,0,1) };
+
+	// compute matrix b
+	for (uint i = 0; i < 3; i++) 
+	{
+		for (uint j = 0; j < 3; j++)
+		{
+			//b[i][j] = glm::dot(/*a axis i , b axis j*/);
+			b[i][j] = glm::dot(this->GetModelMatrix()[i], a_pOther->GetModelMatrix()[j]);
+		}
+	}
+
+	// translation vector between centers
+	vector3 t = vector3( (vector4(a_pOther->GetCenterGlobal(), 1.0f) * m_m4ToWorld) - (vector4(this->GetCenterGlobal(), 1.0f) * m_m4ToWorld));
+
+	// put translation into a's coord frame
+	t = vector3(glm::dot(t, vector3(m_m4ToWorld[0])), glm::dot(t, vector3(m_m4ToWorld[1])), glm::dot(t, vector3(m_m4ToWorld[2])));
+
+	// make sure its good
+	for (uint i = 0; i < 3; i++)
+	{
+		for (uint j = 0; j < 3; j++)
+		{
+			bCorrected[i][j] = glm::abs(b[i][j]) + glm::epsilon<float>();
+		}
+	}
+
+	// check against self x axis if yes return 1 (AX)
+	// check against self y axis if yes return 2 (AY)
+	// check against self z axis if yes return 3 (AZ)
+	for (uint i = 0; i < 3; i++) 
+	{
+		aShadow = m_v3HalfWidth[i];
+		bShadow = a_pOther->m_v3HalfWidth[0] * bCorrected[i][0] + a_pOther->m_v3HalfWidth[1] * bCorrected[i][1] + a_pOther->m_v3HalfWidth[2] * bCorrected[i][2];
+		if (glm::abs(t[i]) > aShadow + bShadow)
+		{
+			if (i == 0)
+			{
+				return BTXs::eSATResults::SAT_AX;
+			}
+			else if (i == 1)
+			{
+				return BTXs::eSATResults::SAT_AY;
+			}
+			else
+			{
+				return BTXs::eSATResults::SAT_AZ;
+			}
+		}
+	}
+
+	// check against other x axis if yes 4 (BX)
+	// check againt other y axis if yes 5 (BY)
+	// check against other z axis if yes 6 (BZ)
+	for (uint i = 0; i < 3; i++) 
+	{
+		aShadow = m_v3HalfWidth[0] * bCorrected[0][i] + m_v3HalfWidth[1] * bCorrected[1][i] + m_v3HalfWidth[2] * bCorrected[2][i];
+		bShadow = a_pOther->m_v3HalfWidth[i];
+		if (glm::abs(t[0] * b[0][i] + t[1] * b[1][i] + t[2] * b[2][i]) > aShadow + bShadow) 
+		{
+			if (i == 0)
+			{
+				return BTXs::eSATResults::SAT_BX;
+			}
+			else if (i == 1)
+			{
+				return BTXs::eSATResults::SAT_BY;
+			}
+			else
+			{
+				return BTXs::eSATResults::SAT_BZ;
+			}
+		}
+			
+	}
+
+	// test axis ax * bx
+	aShadow = m_v3HalfWidth[1] * bCorrected[2][0] + m_v3HalfWidth[2] * bCorrected[1][0];
+	bShadow = a_pOther->m_v3HalfWidth[1] * bCorrected[0][2] + a_pOther->m_v3HalfWidth[2] * bCorrected[0][1];
+	if (glm::abs(t[2] * b[1][0] - t[1] * b[2][0]) > aShadow + bShadow) 
+		return BTXs::eSATResults::SAT_AXxBX;
+
+	// test axis ax * by
+	aShadow = m_v3HalfWidth[1] * bCorrected[2][1] + m_v3HalfWidth[2] * bCorrected[1][1];
+	bShadow = a_pOther->m_v3HalfWidth[0] * bCorrected[0][2] + a_pOther->m_v3HalfWidth[2] * bCorrected[0][0];
+	if (glm::abs(t[2] * b[1][1] - t[1] * b[2][1]) > aShadow + bShadow) 
+		return BTXs::eSATResults::SAT_AXxBY;
+
+	// test axis ax * bz
+	aShadow = m_v3HalfWidth[1] * bCorrected[2][2] + m_v3HalfWidth[2] * bCorrected[1][2];
+	bShadow = a_pOther->m_v3HalfWidth[0] * bCorrected[0][1] + a_pOther->m_v3HalfWidth[1] * bCorrected[0][0];
+	if (glm::abs(t[2] * b[1][2] - t[1] * b[2][2]) > aShadow + bShadow) 
+		return BTXs::eSATResults::SAT_AXxBZ;
+
+	// test axis ay * bx
+	aShadow = m_v3HalfWidth[0] * bCorrected[2][0] + m_v3HalfWidth[2] * bCorrected[0][0];
+	bShadow = a_pOther->m_v3HalfWidth[1] * bCorrected[1][2] + a_pOther->m_v3HalfWidth[2] * bCorrected[1][1];
+	if (glm::abs(t[0] * b[2][0] - t[2] * b[0][1]) > aShadow + bShadow) 
+		return BTXs::eSATResults::SAT_AYxBX;
+
+	// test axis ay * by
+	aShadow = m_v3HalfWidth[0] * bCorrected[2][1] + m_v3HalfWidth[2] * bCorrected[0][1];
+	bShadow = a_pOther->m_v3HalfWidth[0] * bCorrected[1][1] + a_pOther->m_v3HalfWidth[1] * bCorrected[1][0];
+	if (glm::abs(t[0] * b[2][1] - t[2] * b[0][1]) > aShadow + bShadow) 
+		return BTXs::eSATResults::SAT_AYxBY;
+
+	// test axis ay * bz
+	aShadow = m_v3HalfWidth[0] * bCorrected[2][2] + m_v3HalfWidth[2] * bCorrected[0][2];
+	bShadow = a_pOther->m_v3HalfWidth[0] * bCorrected[1][1] + a_pOther->m_v3HalfWidth[1] * bCorrected[1][0];
+	if (glm::abs(t[0] * b[2][2] - t[2] * b[0][2]) > aShadow + bShadow) 
+		return BTXs::eSATResults::SAT_AYxBZ;
+
+	// test axis az * bx
+	aShadow = m_v3HalfWidth[0] * bCorrected[1][0] + m_v3HalfWidth[1] * bCorrected[0][0];
+	bShadow = a_pOther->m_v3HalfWidth[1] * bCorrected[2][2] + a_pOther->m_v3HalfWidth[2] * bCorrected[2][1];
+	if (glm::abs(t[1] * b[0][0] - t[0] * b[1][0]) > aShadow + bShadow) 
+		return BTXs::eSATResults::SAT_AZxBX;
+
+	// test axis az * by
+	aShadow = m_v3HalfWidth[0] * bCorrected[1][1] + m_v3HalfWidth[1] * bCorrected[0][1];
+	bShadow = a_pOther->m_v3HalfWidth[0] * bCorrected[2][2] + a_pOther->m_v3HalfWidth[2] * bCorrected[2][0];
+	if (glm::abs(t[1] * b[0][1] - t[0] * b[1][1]) > aShadow + bShadow) 
+		return BTXs::eSATResults::SAT_AZxBY;
+
+	// test axis az * bz
+	aShadow = m_v3HalfWidth[0] * bCorrected[1][2] + m_v3HalfWidth[1] * bCorrected[0][2];
+	bShadow = a_pOther->m_v3HalfWidth[0] * bCorrected[2][1] + a_pOther->m_v3HalfWidth[1] * bCorrected[2][0];
+	if (glm::abs(t[1] * b[0][2] - t[0] * b[1][2]) > aShadow + bShadow) 
+		return BTXs::eSATResults::SAT_AZxBZ;
+
 	return BTXs::eSATResults::SAT_NONE;
+	//return 0;
 }
 bool MyRigidBody::IsColliding(MyRigidBody* const a_pOther)
 {
@@ -21,7 +163,7 @@ bool MyRigidBody::IsColliding(MyRigidBody* const a_pOther)
 	{
 		uint nResult = SAT(a_pOther);
 
-		if (bColliding) //The SAT shown they are colliding
+		if (nResult < 1) //The SAT shown they are colliding
 		{
 			this->AddCollisionWith(a_pOther);
 			a_pOther->AddCollisionWith(this);

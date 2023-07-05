@@ -59,21 +59,30 @@ void Application::Display(void)
 		break;
 	case 2:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetNearFar(vector2(11, 200.0f));
+		m_pCamera->SetTarget(ZERO_V3);
 		break;
 	case 3:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPerspective(false);
 		break;
 	case 4:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetTarget(vector3(5,0,4));
 		break;
 	case 5:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPosition(AXIS_X * -40.0f);
+		m_pCamera->SetFOV(13.12);
 		break;
 	case 6:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetFOV(6);
+		m_pCamera->SetHorizontalPlanes(vector2(30,45));
 		break;
 	case 7:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetResolution(vector2(30, 40));
 		break;
 	}
 

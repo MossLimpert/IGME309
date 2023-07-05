@@ -20,9 +20,14 @@ vector3 MyRigidBody::GetHalfWidth(void) { return m_v3HalfWidth; }
 matrix4 MyRigidBody::GetModelMatrix(void) { return m_m4ToWorld; }
 void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 {
-	m_m4ToWorld = a_m4ModelMatrix;
+	if (m_m4ToWorld == a_m4ModelMatrix) {
+		return;
+	}
+
+	
 	m_v3MaxG = vector3(m_m4ToWorld * vector4(m_v3MaxL, 1.0f));
 	m_v3MinG = vector3(m_m4ToWorld * vector4(m_v3MinL, 1.0f));
+
 }
 //Allocation
 void MyRigidBody::Init(void)
@@ -190,6 +195,11 @@ void MyRigidBody::AddToRenderList(void)
 		else
 			m_pModelMngr->AddWireCubeToRenderList(glm::translate(m_m4ToWorld, m_v3Center) * glm::scale(m_v3HalfWidth * 2.0f), m_v3ColorNotColliding);
 	}
+
+	vector3 v3ARBBSize = m_v3MaxG - m_v3MinG;
+	/*m_pModelMngr->AddWireCubeToRenderList(
+		glm::translate(makeGlobal(m_m4ToWorld, m_v3Center)) * glm::scale(v3ARBBSize), C_YELLOW
+	)*/
 }
 bool MyRigidBody::IsColliding(MyRigidBody* const other)
 {

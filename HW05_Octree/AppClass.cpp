@@ -2,7 +2,7 @@
 void Application::InitVariables(void)
 {
 	////Change this to your name and email
-	m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	m_sProgrammer = "Moss Limpert - ejl1991@rit.edu";
 	vector3 v3Position(0.0f, 0.0f, 100.0f);
 	vector3 v3Target(0.0f, 0.0f, 99.0f);
 	vector3 v3Upward = AXIS_Y;
@@ -27,7 +27,7 @@ void Application::InitVariables(void)
 			m_pEntityMngr->SetModelMatrix(m4Position);
 		}
 	}
-	m_uOctantLevels = 1;
+	m_uOctantLevels = 8;
 	m_pRoot = new Octant(m_uOctantLevels, 5);
 	m_pEntityMngr->Update();
 }

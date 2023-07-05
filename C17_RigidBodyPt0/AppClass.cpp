@@ -40,15 +40,20 @@ void Application::Update(void)
 	m_pModelMngr->AddModelToRenderList(m_sModel1, glm::translate(m_v3Model1) * ToMatrix4(m_qArcBall));
 	m_pModel1RB->SetModelMatrix(glm::translate(m_v3Model1) * ToMatrix4(m_qArcBall));
 	m_pModel1RB->SetColor(C_WHITE); //reset the color of the rigid bodies to white
-	m_pModel1RB->AddToRenderList();
+	
 	
 	//The following code will be used in a future lesson, feel free to uncomment it and see
 	//what is comming but so far we will only use the SphereCube model
 	//Set model matrix to Steve
-	//m_pModelMngr->AddModelToRenderList(m_sModel2, glm::translate(vector3(2.25f, 0.0f, 0.0f)));
-	//m_pModel2RB->SetModelMatrix(glm::translate(vector3(2.25f, 0.0f, 0.0f)));
-	//m_pModel2RB->SetColor(C_WHITE); //reset the color of the rigid bodies to white
-	//m_pModel2RB->AddToRenderList();
+	m_pModelMngr->AddModelToRenderList(m_sModel2, glm::translate(vector3(2.25f, 0.0f, 0.0f)));
+	m_pModel2RB->SetModelMatrix(glm::translate(vector3(2.25f, 0.0f, 0.0f)));
+	m_pModel2RB->SetColor(C_WHITE); //reset the color of the rigid bodies to white
+	
+
+	m_pModel1RB->IsColliding(m_pModel2RB);
+
+	m_pModel1RB->AddToRenderList();
+	m_pModel2RB->AddToRenderList();
 }
 void Application::Display(void)
 {

@@ -11,9 +11,9 @@ vector3 MyRigidBody::GetMaxLocal(void) { return m_v3MaxL; }
 vector3 MyRigidBody::GetCenterGlobal(void){	return vector3(m_m4ToWorld * vector4(m_v3Center, 1.0f)); }
 vector3 MyRigidBody::GetMinGlobal(void) { return m_v3MinG; }
 vector3 MyRigidBody::GetMaxGlobal(void) { return m_v3MaxG; }
-vector3 MyRigidBody::GetHalfWidth(void) { return m_v3HalfWidth; }
+vector3 MyRigidBody::GetHalfWidth(void) { return m_v3HalfWidth; }	// like halfway in box 2d in sfml
 matrix4 MyRigidBody::GetModelMatrix(void) { return m_m4ToWorld; }
-void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix) { m_m4ToWorld = a_m4ModelMatrix; }
+void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix) { m_m4ToWorld = a_m4ModelMatrix; }	// cant just be empty. model matrix must have something in it
 //Allocation
 void MyRigidBody::Init(void)
 {
@@ -98,6 +98,8 @@ MyRigidBody::MyRigidBody(std::vector<vector3> a_pointList)
 	
 	//Get the distance between the center and either the min or the max
 	m_fRadius = glm::distance(m_v3Center, m_v3MinL);
+
+	m_fRadius = 3.0f;
 }
 MyRigidBody::MyRigidBody(MyRigidBody const& other)
 {
@@ -138,8 +140,12 @@ void MyRigidBody::AddToRenderList(void)
 	if (!m_bVisible)
 		return;
 
+
+
 	//m_pMeshMngr->AddWireCubeToRenderList(glm::translate(m_m4ToWorld, m_v3Center) * glm::scale(m_v3HalfWidth * 2.0f), C_WHITE);
-	m_pModelMngr->AddWireSphereToRenderList(glm::translate(m_m4ToWorld, m_v3Center) * glm::scale(vector3(m_fRadius)), m_v3Color);
+	matrix4 m4Transform = glm::translate(vector3(m_v3Center));
+	m4Transform = m4Transform * glm::scale(vector3(m_fRadius));
+	m_pModelMngr->AddWireSphereToRenderList(m4Transform, m_v3Color);
 }
 bool MyRigidBody::IsColliding(MyRigidBody* const other)
 {
